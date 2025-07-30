@@ -34,16 +34,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes API avec préfixes `/api/...`
 // C’est important pour ne pas bloquer la route `/` qui doit servir Angular
-app.use('/',produit_Route)
-app.use('/',user_Route)
-// app.use('/admin',admin_Route)
-app.use('/',categorie_Route)
-app.use('/',Wishlist_route)
-app.use('/',offre_route)
-app.use('/',review_route)
-app.use('/',contact_route)
-app.use('/',cart_route)
-app.use('/',chekout_route)
+app.use('/api', produit_Route)
+app.use('/api', user_Route)
+app.use('/api', categorie_Route)
+app.use('/api', Wishlist_route)
+app.use('/api', offre_route)
+app.use('/api', review_route)
+app.use('/api', contact_route)
+app.use('/api', cart_route)
+app.use('/api', chekout_route)
 
 // Toutes les autres routes non reconnues => renvoyer Angular index.html
 app.get('*', (req, res) => {
