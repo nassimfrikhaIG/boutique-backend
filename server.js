@@ -1,10 +1,8 @@
-
 const express = require('express');
-const path = require('path');
 
+// Import des routes
 const produit_Route = require('./routers/produit_route');
 const user_Route = require('./routers/user_route');
-const admin_Route = require('./routers/admin_route');
 const categorie_Route = require('./routers/categorie_route');
 const Wishlist_route = require('./routers/whishlist_route');
 const offre_route = require('./routers/offre_route');
@@ -15,39 +13,58 @@ const chekout_route = require('./routers/chekout_route');
 
 const app = express();
 
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// CORS
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Request-Methods', '*');
-  res.setHeader('Access-Control-Allow-Headers', '*');
-  res.setHeader('Access-Control-Allow-Methods', '*');
-  next();
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    next();
 });
 
-// Servir fichiers statiques uploadés
+// Logging
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+});
+
+// Fichiers statiques
 app.use('/uploads', express.static('uploads'));
 
-// Servir frontend Angular compilé
-
-// Routes API avec préfixes `/api/...`
-// C’est important pour ne pas bloquer la route `/` qui doit servir Angular
-app.use('/api', produit_Route)
-app.use('/api', user_Route)
-app.use('/api', categorie_Route)
-app.use('/api', Wishlist_route)
-app.use('/api', offre_route)
-app.use('/api', review_route)
-app.use('/api', contact_route)
-app.use('/api', cart_route)
-app.use('/api', chekout_route)
-
-// Toutes les autres routes non reconnues => renvoyer Angular index.html
-
+// Routes de test directs (pour debug)
 app.get('/health', (req, res) => {
-  res.json({ status: 'API Backend OK', timestamp: new Date() });
+    res.json({ status: 'OK', message: 'API fonctionne' });
 });
-app.listen(3000, () => {
-  console.log('Serveur démarré sur http://localhost:3000');
+
+app.get('/test', (req, res) => {
+    res.json({ message: 'Route test OK' });
+});
+
+// Routes API avec préfixe /api
+app.use('/api', produit_Route);
+app.use('/api', user_Route);
+app.use('/api', categorie_Route);
+app.use('/api', Wishlist_route);
+app.use('/api', offre_route);
+app.use('/api', review_route);
+app.use('/api', contact_route);
+app.use('/api', cart_route);
+app.use('/api', chekout_route);
+
+// Route catch-all pour debug
+app.use('*', (req, res) => {
+    console.log(`Route non trouvée: ${req.method} ${req.originalUrl}`);
+    res.status(404).json({ 
+        error: 'Route non trouvée', 
+        method: req.method, 
+        url: req.originalUrl 
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
