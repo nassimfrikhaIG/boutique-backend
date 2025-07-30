@@ -30,7 +30,6 @@ app.use((req, res, next) => {
 app.use('/uploads', express.static('uploads'));
 
 // Servir frontend Angular compilé
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes API avec préfixes `/api/...`
 // C’est important pour ne pas bloquer la route `/` qui doit servir Angular
@@ -45,10 +44,10 @@ app.use('/api', cart_route)
 app.use('/api', chekout_route)
 
 // Toutes les autres routes non reconnues => renvoyer Angular index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
+app.get('/health', (req, res) => {
+  res.json({ status: 'API Backend OK', timestamp: new Date() });
+});
 app.listen(3000, () => {
   console.log('Serveur démarré sur http://localhost:3000');
 });
