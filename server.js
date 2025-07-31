@@ -14,6 +14,13 @@ const cart_route = require('./routers/cart_router');
 const chekout_route = require('./routers/chekout_route');
 
 const app = express();
+const cors = require('cors');
+
+app.use(cors({
+  origin: 'https://cozy-queijadas-1ed97a.netlify.app', // ton lien Netlify
+  methods: ['GET','POST','PATCH','DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
