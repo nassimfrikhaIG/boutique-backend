@@ -15,9 +15,22 @@ const chekout_route = require('./routers/chekout_route');
 
 const app = express();
 
-// CORS (Netlify uniquement)
+// Liste des origines autorisées
+const allowedOrigins = [
+  'https://cozy-queijadas-1ed97a.netlify.app',
+  'http://localhost:4200' // Pour le développement local
+];
+
+// Configuration CORS
 app.use(cors({
-  origin: 'https://cozy-queijadas-1ed97a.netlify.app',
+  origin: (origin, callback) => {
+    // Autoriser les requêtes sans origine (comme Postman) ou celles des origines autorisées
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Non autorisé par CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
