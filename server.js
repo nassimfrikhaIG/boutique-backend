@@ -1,6 +1,6 @@
-
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 
 const produit_Route = require('./routers/produit_route');
 const user_Route = require('./routers/user_route');
@@ -14,49 +14,41 @@ const cart_route = require('./routers/cart_router');
 const chekout_route = require('./routers/chekout_route');
 
 const app = express();
-const cors = require('cors');
 
+// CORS (Netlify uniquement)
 app.use(cors({
-  origin: 'https://cozy-queijadas-1ed97a.netlify.app', // ton lien Netlify
-  methods: ['GET','POST','PATCH','DELETE'],
+  origin: 'https://cozy-queijadas-1ed97a.netlify.app',
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Request-Methods', '*');
-  res.setHeader('Access-Control-Allow-Headers', '*');
-  res.setHeader('Access-Control-Allow-Methods', '*');
-  next();
-});
-
-// Servir fichiers statiques uploadés
+// Fichiers statiques uploadés
 app.use('/uploads', express.static('uploads'));
 
-// Servir frontend Angular compilé
+// Fichiers Angular compilés
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Routes API avec préfixes `/api/...`
-// C’est important pour ne pas bloquer la route `/` qui doit servir Angular
-app.use('/api',produit_Route)
-app.use('/api',user_Route)
-// app.use('/admin',admin_Route)
-app.use('/api',categorie_Route)
-app.use('/api',Wishlist_route)
-app.use('/api',offre_route)
-app.use('/api',review_route)
-app.use('/api',contact_route)
-app.use('/api',cart_route)
-app.use('/api',chekout_route)
+// Routes API
+app.use('/api', produit_Route);
+app.use('/api', user_Route);
+app.use('/api', categorie_Route);
+app.use('/api', Wishlist_route);
+app.use('/api', offre_route);
+app.use('/api', review_route);
+app.use('/api', contact_route);
+app.use('/api', cart_route);
+app.use('/api', chekout_route);
 
-// Toutes les autres routes non reconnues => renvoyer Angular index.html
+// Route Angular catch-all
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(3000, () => {
-  console.log('Serveur démarré sur http://localhost:3000');
+// Port dynamique pour Render
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Serveur démarré sur le port ${PORT}`);
 });
